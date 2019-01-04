@@ -27,6 +27,11 @@
 <name> := <expression>
 ```
 
+* From another book (Learn Haskell Book): The lambda calculus has three basic components, or lambda terms: expressions, variables, and abstractions. The word expression refers to a superset of all those things: an expression can be a varible name, an abstraction, or a combination of those things. 
+    * **The simplest expression is a single variable.** Variables here have no meaning or value; they are only names for potential inputs to functions.
+    * **An abstraction is a function.** It is a lambda term that has a head (a lambda) and a body and is applied to an argument. An argument is an input value. Abstractions consist of two parts: the *head* and the *body* The head of the function is a `𝜆`(lambda) followed by a variable name. The body of the function is another expression. So, a simple function might look like this: `𝜆𝑥.𝑥`. The variable named in the head is the **parameter** and **binds** all instances of that same variable in the body of the function. That means, when we apply this function to an argument, each `x`in the body of the function will have the value of that argument.
+    * **The act of applying a lambda function to an argument is called application** and application is the lynchpin of the lambda calculus.
+
 * Functional languages are based on structured function calls. A functional program is an expression consisting of a function call which calls other functions in turn:
 
 ```
@@ -77,7 +82,7 @@ X := Y
 ```
 F(A(D), B(D), C(D))
 ```
-* The order in which A(D), B(D), C(D) carried out does not matter, beacuse functions A, B and C cannot change it's thier common actual paramter D. 
+* The order in which A(D), B(D), C(D) carried out does not matter, beacuse functions A, B and C cannot change it's common actual parameter D. 
 
 > In functional languages there is no necessary exexution order. 
 
@@ -85,7 +90,7 @@ F(A(D), B(D), C(D))
 
 ### Repetition in imperative and functional languages
 
-* In imperative languages command may change the values associated with a names by previous commands so a new name is not necessarily introduced for each new command. In order to carry out several commands several times, those commands need to be duplicated. Instead, the same commands are preated. Each name may be and usually will be associated with different values while a program is running.
+* In imperative languages command may change the values associated with a names by previous commands so a new name is not necessarily introduced for each new command. In order to carry out several commands several times, those commands need to be duplicated. Instead, the same commands are repeated. Each name may be and usually will be associated with different values while a program is running.
 
 * For example, in order to find the sum of the N elements of array A we do not write:
 
@@ -125,7 +130,7 @@ BEGIN
 // Thus, for the function call:
 SUM(B, 1, M)
 
-// The sum is found through successive resucrive calls to SUM:
+// The sum is found through successive recursive calls to SUM:
 B[1] + SUM(B, 2, M) = B[1] + B[2] + SUM(B, 3, M)
 B[1] + B[2] + ... + B[M] + SUM(B, M+1, M)
 B[1] + B[2] + ... + B[M] + 0
@@ -137,7 +142,7 @@ B[1] + B[2] + ... + B[M] + 0
 
 ### Data structures in functional languages
 
-* In imperative languages, array elements and record fields are changes by succesive assignments. In functional languages, becauset here is no assignemnt, sub-structures in data structures cannot be changes one at a time. Instead, it is necessary to write down a whole structure with explicit changes to the appropriate sub-structure. 
+* In imperative languages, array elements and record fields are changes by succesive assignments. In functional languages, because here is no assignemnt, sub-structures (an underlying or supporting structure) in data structures cannot be changes one at a time. Instead, it is necessary to write down a whole structure with explicit changes to the appropriate sub-structure. 
 
 **Note:** Functional languages provide explicit representations for data structures. 
 
@@ -155,7 +160,7 @@ r.
 
 * The lambda calculus is a suprisingly simple yet powerful system. It is based on function **abstraction**, to generalise expressions through the introduction of names, and function **application**, to evaluate generalised expressions by giving names particular values. 
 
-* Abstraction and application are all that are needed to devleop representations for arbitrary programming language construct. Thus, lambda calculus can be treate as a universal machine code for programming languages.
+* Abstraction and application are all that are needed to develop representations for arbitrary programming language construct. Thus, lambda calculus can be treate as a universal machine code for programming languages.
 
 **Note:** In this book we are going to use lambda calculus to explore functional programming. Pure lambda calculus does not look much like a programming language. Indeed, all it provides are names, function abstraction and function application. **However, it is straightforward to develop new language constructs from this basis.** Here we will use lambda calculus to construct step by step a compact, general purpose functional programming notation such as pairs of object, boolean values and operations, numbers, conditional expressions, recursive functions, types and typed representations for boolean values, numbers and characters, representations of lists, linear list processing...
 
@@ -167,14 +172,14 @@ r.
 λ - lambda 
 η - eta
 ```
-* Syntatic construcs are defined using BNF **rules.** Each rule has a **rule name** consisting of one or more words within ange brackets `< and >.` A rule associates its name with a **rule body** consisting of a sequence of symbols and rule names. If there are different possible rule bodies for the same rule then they are separated by | s.
+* Syntatic construcs are defined using BNF **rules.** Each rule has a **rule name** consisting of one or more words within angel brackets `< and >.` A rule associates its name with a **rule body** consisting of a sequence of symbols and rule names. If there are different possible rule bodies for the same rule then they are separated by | s.
 
 * For example, binary numbers are based on the digits 1 and 0:
 
 ```
 <digit> ::= 1 | 0
 ```
-* and a binary number may be either a single digit or a digit followed by a number:
+* and a binary number may be either a single digit (any of the numerals from 0 to 9) or a digit followed by a number:
 
 ```
 <binary> ::= <digit> | <digit> <binary>
@@ -184,19 +189,19 @@ r.
 
 ### Abstraction
 
-* Abstraction is central to problem solving and programming. It involves generalisation from concrete instances of a problem so that a general solution may be formulated. A general, abstract, solution may then be used in turn to solve particular, concrete instances of the problem. 
+* Abstraction is central to problem solving and programming. It involves generalisation from concrete instances of a problem so that a general solution may be formulated. A general, abstract, solution may then be used in turn to solve particular, concrete instances (a particular case) of the problem. 
 
-* The simplest way to specify an instance of a problem is in terms of particular concrete operations on particular concrete object. Abstraction is baed on the use of names to stand for concrete objects and operations to generalise the instances. A generalised instance may subsequently be truned into particular instance by replacing the names with new concrete objects and operations.
+* The simplest way to specify an instance of a problem is in terms of particular concrete operations on particular concrete object. Abstraction is based on the use of names to stand for concrete objects and operations to generalise the instances. A generalised instance may subsequently be truned into particular instance by replacing the names with new concrete objects and operations.
 
-* Consider buying 9 items at 10 pence each: The total cost is: 10 * 9. Here we are carrying out the conceret operation of multiplication on the concrete values 10 and 9. Now consider buying 11 items at 10 pence each. The total cost is: 10 * 11. Here we are carrying out the concrete operation of multiplication on the concrete values 10 and 11. 
+* Consider buying 9 items at 10 pence each: The total cost is: 10 * 9. Here we are carrying out the concrete operation of multiplication on the concrete values 10 and 9. Now consider buying 11 items at 10 pence each. The total cost is: 10 * 11. Here we are carrying out the concrete operation of multiplication on the concrete values 10 and 11. 
 
-* We can see that as the number of items changes so the formula for the total cost changes at the place where the number of items appear. We can **abstract over** the number of items in the formula by introducing a nmae to stand for a general number of items, say `items`:
+* We can see that as the number of items changes so the formula for the total cost changes at the place where the number of items appear. We can **abstract over** the number of items in the formula by introducing a name to stand for a general number of items, say `items`:
 
 ```
 10 * items
 ```
 
-* We miight make this abstraction explicit by preceding the formula with the name used for abstraction:
+* We might make this abstraction explicit by preceding the formula with the name used for abstraction:
 
 ```
 REPLACE items IN 10 * items
@@ -211,7 +216,7 @@ REPLACE items WITH 84 IN 10 * items
 * Lets use abstraction again to generalise our example further. Suppose the cost of items goes up to 11 pence. Now the total cost of items is:
 
 ```
-REPLEACE items IN 11 * items
+REPLACE items IN 11 * items
 ```
 
 * Suppose the cost of items drops to 9 pence. Now the total cost of items is:
@@ -239,7 +244,7 @@ REPLACE items WITH 12 IN 32 * items
 32 * 12
 ```
 
-* Suppose we now want to solve a different problem. We are given the total cost and the number of items and we want to find out how much each item costs. Fors example, if 12 items cost 144 pecen then each item costs:
+* Suppose we now want to solve a different problem. We are given the total cost and the number of items and we want to find out how much each item costs. For example, if 12 items cost 144 pence then each item costs:
 
 ```
 144/23
@@ -259,7 +264,7 @@ REPLACE cost IN
     REPLACE items IN cost * items
 ```
 
-* They are the same except for the opration `/` in finding the cost of each item and `*`in finding the cost of all items. We have two instances of a problem involving applying an operation to two operands (the quantity on which an operation is to be done). We could generalize th instances by  introducing a name, say `op`, where the operation is ued:
+* They are the same except for the opration `/` in finding the cost of each item and `*`in finding the cost of all items. We have two instances of a problem involving applying an operation to two operands (the quantity on which an operation is to be done). We could generalize the instances by introducing a name, say `op`, where the operation is ued:
 
 ```
 REPLACE op IN
@@ -302,19 +307,19 @@ REPLACE cost IN
 
 * Abstractions my be subject to further abstraction. This is the basis of hierarchical program design methodologies and mudularity. 
 
-* For example, Pascal procedures are abstractions for sequences of statements, named by **procedure** declarations, and functions are abstractions for expressions, named by function declarations. Procedures and functions, declare formal paramters which identify the names used to abstract in statement sequences and expressions. Actual paramters specialise procedures and functions. Procedure calls with actual parameters invoke sequence of statements with formal parameters replaced by actual parameters. Similarly, function calls with actual parameters evaluate expressions with formal parameters replaced by actual parameters. 
+* For example, Pascal procedures are abstractions for sequences of statements, named by **procedure** declarations, and functions are abstractions for expressions, named by function declarations. Procedures and functions, declare formal parameters which identify the names used to abstract in statement sequences and expressions. Actual parameters specialise procedures and functions. Procedure calls with actual parameters invoke sequence of statements with formal parameters replaced by actual parameters. Similarly, function calls with actual parameters evaluate expressions with formal parameters replaced by actual parameters. 
 
-* Arays are abstractions for sequencs of variables of the same type. 
+* Arays are abstractions for sequence of variables of the same type. 
 
 ### Lambda Calculus
 
-* Lambda calculus is a model for computability and has subsequently been central to contemporary compuer science. **It is a very simple but very powerful language based on pure abstraction.** It can be used to formalise all aspects of programming languages and programming and is particularly suited for use as a `machine code` for functional languages and functional programming. 
+* Lambda calculus is a model for computability and has subsequently been central to contemporary computer science. **It is a very simple but very powerful language based on pure abstraction.** It can be used to formalise all aspects of programming languages and programming and is particularly suited for use as a `machine code` for functional languages and functional programming. 
 
 ### Lambda Expressions
 
 * The lambda calculus is a system for manipulating lambda expressions. A lambda expression my be a **name** to identify an abstraction point, a **function** to introduce an abstraction or a **function application**
 
-1) A **name** when instead of values we use names such as `items, const`
+1) A **name** when instead of values we use names such as `items, const`. Just a simple name without any meaning or value.
 2) A **function** when we generalise over a specific problem such as total costs `item * cost``
 3) A **function application** when we replace the names with their actual values `32 * 12`
 
@@ -345,9 +350,9 @@ fred legs-11 19th_nervous_breakdown 33 + -->
 ```
 λx.x λfirst.λsecond.first λf.λa.(f a)
 ```
-* The `λ`precedes and introduces a nmae used for abstraction. The name is called the function's `bound variable` and is like a formal parameter. The `.`separates the name from the expression in which abstraction with that name takes place. This expression is called the function's `body`. 
+* The `λ`precedes and introduces a name used for abstraction. The name is called the function's `bound variable` and is like a formal parameter. The `.`separates the name from the expression in which abstraction with that name takes place. This expression is called the function's `body`. 
 
-**Note:** The body expression may be any `λ`expression including another function. Note that function do not have names! For example, in Pascal, the function name is always used to refer to the function's defintion.
+**Note:** The body expression may be any `λ`expression including another function. Note that function do not have names! For example, in Pascal, the function name is always used to refer to the function's definition.
 
 * A function application has the form:
 
@@ -367,10 +372,10 @@ fred legs-11 19th_nervous_breakdown 33 + -->
 (λ.x.x λa.λb.b)
 ```
 
-* A function application specialises an abstraction by providing a value for the name. The function epxression contains the abstraction to be specialied with the argument expression. 
+* A function application specialises an abstraction by providing a value for the name. The function expression contains the abstraction to be specialied with the argument expression. 
 
 * In a function application, also known as a **bound pair**, the function epxression is said to be **applied to** the argument expression. This is like a function call in Pascal where the argument expression corresponds to the actual parameter. The crucial difference is that in Pascal the function name is used in the function call and the implementation picks up the corresponding definition. The λ calculus is far more general and allows function defintions to appear directly in function calls. 
 
-* There are two approaches to evaluationg function applications. For both, the function expression is evaluated to return a function. Next, all occurences of the function's ound variable in the function's body expresion are preplaces by *either*: the value of the argument expression *or* the unevaluated argument expression. Finally, the function body expression is then evaluated. 
+* There are two approaches to evaluationg function applications. For both, the function expression is evaluated to return a function. Next, all occurences of the function's bound variable in the function's body expresion are preplaces by *either*: the value of the argument expression *or* the unevaluated argument expression. Finally, the function body expression is then evaluated. 
 
 P. 18
