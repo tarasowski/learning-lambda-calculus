@@ -712,3 +712,43 @@ In the body of: `λg.((g λh.(h (g λh.(h λg.(h g))))), g)` which is `(g λh.(h
 (λf.f λf.f) =>
 λf.f
 ```
+
+### Name clashes and α conversion
+
+* We have restricted the use of names in the expressions to the bodies of functions. This may be restated as the requirement that there be no free variables in a λ expression. Without this restriction names become objects in their own right. this eases data representation: atomic objects may be represented directly as names and structured sequences of objects as nested applications using names. However, it also makes reduction much more complicated.
+
+* For example consider the function application function: `def apply = λfunc.λarg.(func arg)` Consider: 
+
+```
+((apply arg) boing) ==
+((λfunc.λarg(func arg) arg) boing)
+```
+
+* Here, `arg` is used both as a function bound variable name and as a free variable name in the leftmost application. These are two distinct uses: the bound variable will be replaced by β reduction but the free variable stays the same. However, if we carry out β reduction literally: 
+
+```
+((λfunc.λarg.(func arg) arg) boing) =>
+(λarg.(arg arg) boing) =>
+(boing boing)
+```
+* which was not intended at all. The ragument `arg` has been substited in the scope of the bound variable `arg` and appers to create a new ocurence of that bound variable. We can avoid this using consistent renaming. Here we might replace the bound variable `arg` in the function with, say, `arg1`:
+
+```
+((λfunc.λarg1.(func arg1) arg) boing) =>
+(λarg1.(arg arg1) boing) =>
+(arg boing)
+```
+* A name clash arises when a β reduction places an expression with a free variable in the scope of a bound variable with the same name as the free variable. Consistent renaming, which is knows as **α conversion (alpha conversion)**, removes the name clash. For a function: `α<name1>.<body>`the name `<name1>` and all free occurences of `<name1>` in `<body>` may be replaced by a new name `<name2>`provided by `<name2>` is not the name of a free variable in `λ<name1>.<body>`. Note that replacement includes the name at: `λ<name1>`
+
+### Simplification through eta reduction
+
+* Consider an expression of the form: `λ<name>.(<expression> <name>)`This is a bit like the function application function above after application to a function expression only. This is equalent to. `<expression>`because the application of the expression to an arbitrary argument: `<argument>`gives: 
+
+```
+(λ<name>.(<expression> <name>) <argument>) =>
+(<expression> <argument>)
+```
+
+* This simplification of: `λ<name>.(<expression> <name>)` to `<expression>` is called η reduction (eta reduction)
+
+P.36
