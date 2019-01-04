@@ -589,4 +589,126 @@ apply
 <argument2>
 ```
 
-* We can show that `select_second` applied to anything returns a version of `identity`
+* We can show that `select_second` applied to anything returns a version of `identity`. As before, we will use: `<argument>`to stand for an arbitrary expression, so: 
+
+```
+(select_second <argument>) ==
+(λfirst.λsecond.second <argument>) =>
+λsecond.second
+```
+* If `second` is replaced by `x` then: `λ.second.second` becomes `λx.x`. Notice that `select_first`applied to identity returns a version of `select_second`: 
+
+```
+(select_first identity) ==
+(λ.first.λsecond.first identity) =>
+λsecond.identity ==
+λsecond.λx.x
+```
+* If `second` is replaced by `first` and `x` by second then this becomes: `λfirst.λsecond.second`
+
+### Making pairs from two arguments
+
+* Consider the function: `def make_pair = λ.first.λsecond.λfunc.((func first), second)` with bound variable: `first`and body `λ.second.λfunc.((func first) second)`This function applies argument `func` to argument `first`to build a new function which may be applied to argument `second`. Note that arguments `first` and `second`are used before argument func to build a function: `λfunc.((func first) second)`. Now, if this function is applied to `select_first` then argument `first`is returned and if it is applied to `select_second`then argument second is returned. For example:
+
+```
+((make_pair identity) apply) ==
+((λfirst.λsecond.λfunc.((func first) second) identity) apply) =>
+(λ.second.λfunc.((func identity) second) apply) =>
+λ.func.(func identity) apply)
+```
+
+* Now if this function is applied to `select_first`:
+
+```
+(λfunc.((func identity) apply) select_first) ==
+((select_first identity) apply)) ==
+((λfirst.λsecond.first identity) apply) =>
+(λsecond.identity apply) =>
+identity
+```
+
+* and if it is applied to `select_second`:
+
+```
+(λfunc.((func identity) apply) select_second) ==
+((select_second identity) apply) ==
+((λfirst.λsecond.second identity) apply) =>
+(λsecond.second apply) =>
+apply
+```
+
+In general, applying `make_pair` to arbitrary arguments: `<argument1>` and `<argument2>`gives: 
+
+```
+((make_pair <argument1>) <argument2>) ==
+((λfirst.λsecond.λfunc.((func first) second)) <argument1>) <argument2>) =>
+((λsecond.λfunc.(func <argument1>) second) <argument2>) =>
+(λfunc.(func <argument1>) <argument2>)
+```
+
+* Thereafter, applying this function to `select_first` returns the first argument:
+
+```
+(λfunc.((func <argument1>) <argument2>) select_first) =>
+((select_first <argument1>) <argument2>) ==
+((λfirst.λsecond.first <argument1>) <argument2>) =>
+(λsecond.<argument1> <argument2>) =>
+<argument1>
+```
+
+* and applying this function to `select_second` returns the second argument: 
+
+```
+(λfunc.((func <argument1>) <argument2>) select_second) =>
+((select_second <argument1>) <argument2>) ==
+((λfirst.λsecond.second <argument1>) <argument2>) =>
+(λsecond.second <argument2>) =>
+<argument2>
+```
+
+### Free and bound variables
+
+* We are not going to consider how we ensure that arguments are substituted correctly for bound variables in function bodies. If all the bound variables for functions in an expression have distinct names then there is no problem. For example, in `(λf.(f λx.x) λs.(s s))`there are three functions. The first has bound variable `f`, the second has bound variable `x` and the third has bound variable `s`. Thus:
+
+```
+(λf.(f λx.x) λs.(s s)) =>
+(λs.(s s) λx.x) =>
+(λx.x λx.x) =>
+λx.x
+```
+* It is possible, however for bound variables in different functions to have the same name. Consider: `(λf.(f λf.f) λs.(s s))` This should give the same result as the previous expression. Here, the bound variable `f`should be replaced by: `λs.(s s)`. Note that we should replace the first `f` in: `(f λf.f)`but not the `f` in the body of: `λf.f`. This is a new function with a new bound variable which just happens to have the same name as a previous bound variable. To clarify this we need to be more specific about how bound variables relate to variables in function bodies. For an arbitrary function: `λ<name>.<body>` the bound variable `<name>` may correspondend to occurencies of `<name>` in `<body>`and nowhere else. Formally the **scope of the bound variable `<name>` is `<body`. 
+
+* For example, in `λf.λs.(f (s s))`the bound variable `f` is in scope in `λs.(f (s s))` In: `(λf.λg.λa.(f (g a)) λg.(g g))`the leftmost bound variable `f`is in scope in: `λg.λa.(f (g a))`and nowhere else. Similarly, the rightmost bound variable `g` is in scope in: `(g g)` and nowhere else. 
+
+**Note:** Note that we have said may *correspond*. This is because the re-use of a name may alter a bound variable's scope. 
+
+* Now the idea of a variable being **bound** or **free** in an expression can be introduced. A variable is said to be bound to occurences in the body of a function for which it is the bound variable provided no other function within the body introduce the same bound variable. Otherwise it is said to be free.
+
+* Thus, in the expression: `λx.x`the variable `x`is bound but in the expression: `x`the variable `x` is free.
+
+* In `λf.(f λx.x)` the variable `f`is bound but the expression: `(f λx.x)` the variable `f` is free. In general, for a function: `λ<name>.<body>` `<name>` refers to the same variable throughout `<body>` except where another function has `<name>` as its bound viariable. References to `<name>`in the new function's body then corresponds to the new bound variable and not the old. 
+
+> In formal terms, all the free occurrences of `<name>` in `<body>`are references to the same bound variable `<name>` introduced by the original function. `<name>`is in scope in `<body>` wherever it may occur free; that is except where another function introduces it in in a new scope. 
+
+* For example in the body of: `λf.(f λf.f)` which is `(f λf.f)` the first `f` is free so it corresponds to the original bound variable `f` but subsequent `f`'s are bound and so are distinct from the original bound variable. The outer `f` is in scope except in the scope of the inner `f`. 
+
+In the body of: `λg.((g λh.(h (g λh.(h λg.(h g))))), g)` which is `(g λh.(h (g λh.(h λg.(h g))))) g` The first, second and last occurrences of `g` occur free so they correspond to the outer bound variable `g`. The third and forth `g`'s are bound and so are distinct from the original `g`. The outer `g` is in scope in the body except in the scope of the inner `g`. 
+
+* A variable is bound in an expression if:
+    * the expression is an application: `(<function> <argument>)`and the variable is bound in `<function>` or `<argument>`For example, `convict` is bound in: `(λconvict.convict fugitive)` and in: `(λprison.prison λconvict.convict)``
+    * the expression is a function: `λ<name>.<body>` and either the variable's name is `<name>`or it is bound in `<body>`. For example, `prisoner` is bound in: `λprisoner.(number6 prisoner)` and in: `λprison.λprisoner.(prison prisoner)`
+
+* Similarly, a variable is free in an expression if:
+    * the expression is a single name: `<name>` and the variable's name is `<name>`. For example, `truant` is free in: `truant`
+    * the expression is an application: `(<function> <argument>)`and the variable is free in `<function>` or in `<argument`>. For example, `escaper`is free in: `(λprisoner.prisoner escaper)` and in: `(escaper λjainlor.jailor)`
+    * the expression is a function: `λ<name>.<body>` and the variable's name is not `<name>`and the variable is free in `<body>`. For example, `fugitive` is free in: `λprison.(prison fugitive)` and in `λshort.λsharp.λshock.fugitive` 
+
+**Note:** Note that a variable may be bound and free in different places in the same expression. We can now define β reduction more formally. In general, for the β reduction of an application: `(λ<name>.<body> <argument>)`we replace all free occurences of `<name>` in `<body>` with `<argument>`. This ensures that only those occurenses of `<name>`which actually correspond to the bound variable are replaced. 
+
+* For example, in: `(λf.(f λf.f) λs.(s s))` the first occurence of `f`in the body: `(f λf.f)` is free and it gets replaced: 
+
+```
+(λs.(s s) λf.f) =>
+(λf.f λf.f) =>
+λf.f
+```
