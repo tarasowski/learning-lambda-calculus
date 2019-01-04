@@ -378,4 +378,215 @@ fred legs-11 19th_nervous_breakdown 33 + -->
 
 * There are two approaches to evaluationg function applications. For both, the function expression is evaluated to return a function. Next, all occurences of the function's bound variable in the function's body expresion are preplaces by *either*: the value of the argument expression *or* the unevaluated argument expression. Finally, the function body expression is then evaluated. 
 
-P. 18
+* The first approach is called **applicative order** and is like Pascal 'call by value': the actual parameter expression is evaluated before being passed to the formal parameter.
+
+* The second approach is called **normal order** and is like 'call by name' in ALGOL 60: the actual parameter expression is not evaluated before being passed to the formal parameter.
+
+**Note:** Normal order is more powerful than applicative order but may be less efficient. For the moment, all function applications will be evaluated in normal order. The syntax allows a single name as a `λ`expression but in general we will restrict single names to the bodies fo functions. This is so that we can avoid having to consider names as objects in their own right, like LISP or Prolog literals as it complicates the presentation.
+
+### Identitfy function
+
+```
+λx.x
+```
+* This is the identity function which returns whatever argument it is applied to. Its bound variable (parameter) is: `x` and its body expression is the name `x`. When it is used as the function expression in a function application the bound variable `x` will be replaced by the argument expression in the body expression `x` giving the original argument expression.
+
+* Suppose the identity function is applied to itself. This is a function application with: `λx.x` as the function expressin and `λx.x` as the argument expression.
+
+```
+(λx.x λx.x)
+```
+
+* When this application is evaluated, the bound variable `x` for the function expression `λx.x`is replaced by the argument expression: `λx.x`in the body expression `x` giving `λx.x`
+
+* An identity operation always leaves its argument unchanged. In arithmetic, adding or subtracting 0 are identity operations. For any `<number>`:
+
+```
+<number> + 0 = <number>
+<number> - 0 = <number>
+```
+
+* Multiplying or diving by 1 are also identity operations:
+
+```
+<number> * 1 = <number>
+<number> / 1 = <number>
+```
+* The identity function is an identity operation for `λ` functions.
+
+* We could equally well have used different names for the bound variable, for example: `λa.a` or `λyibble.yibble` to define other versions of the identity function. 
+
+### Self application function
+
+* Consider the rather odd function:
+
+```
+λs.(s s)
+```
+* which applies its argument to its argument. The bound variable is `s` and the body expression is the function application: `(s s)`, which has the name `s` as function expression and the same name `s` as argument expression. Here is the application of the identity function to it:
+
+```
+(λx.x λs.(s s))
+```
+
+* In this application, the function expression is `λx.x` and the argument expression is `λs.(s s)`, when this application is evaluated, the function expression bound variable: `x` is replaced by the argument: `λs.(s s) in the function expression body: `x`giving `λs.(s s)` which is the original argument.
+
+* Application of self application function to the identity function: 
+
+```
+(λs.(s s) λx.x)
+```
+
+* Here the function expression is `λs.(s s)` and teh argument expression is `λx.x`. When this application is evaluated, the function expression bound variable: `s` is the function expression body: `(s s)` giving a new application: `(λx.x λx.x)`with function expression: `λx.x`and argument expression: `λx.x`. This is now evaluated as above giving the final value: `λx.x`
+
+* Consider the application of the self application function to itself:
+
+```
+(λs.(s s) λs.(s s))
+```
+
+* This application has function expression `λs.(s s)` and argument expression: `λs.(s s)` To evaluate it, the function expression bound variable: `s` is replaced by the argument: `λs.(s s)`in the function expression body `(s s)`giving a new application `(λs.(s s) λs.(s s))`whith function expression: `λs.(s s)`and argument expression `λs.(s s)`which is then evaluated. The function expression bound variable: `s`is replaced by teh argument: `λs.(s s)`in the function expression body: `(s s)`giving the new application: `λs.(s s) λs.(s s)` which is then evaluated... **Each application evaluates to the original application so this application never terminates!** 
+
+### Function application function
+
+```
+λfunc.λarg.(func arg)
+```
+* This function has bound variable `func`and the body expression is another function: `λarg.(func arg)` which has bound variable `arg`and the a function application `(func arg)` as body expression. This in turn has the name `func` as function expression and the name `arg`as argument expression.
+
+* When used, the whole function returns a second function which then applys the first function's argument to the second function's argument. For example, lets apply the identity functon to the self application function:
+
+```
+((λfunc.λarg.(func arg) λx.x) λs.(s s))
+```
+* In this example of an application, the function expression is itself an application: `(λ.func.λarg.(func arg) λx.x)` which must be evaluated first. The bound variable `func` is replaced by the argument `λx.x` in the body `λarg.(func arg)` giving `λarg.(λx.x arg)` which is a new function which applies the identity function to its argument. The original expression is now: `(λarg.(λx.x arg) λs.(s s))` and so the bound variable: `arg` is replaced by the argument: `λs.(s s)` in the body: `(λx.x arg)` giving: `(λx.x λs.(s s))`which is now evaluated. The bound variable: `x` is replaced by the argument `λs.(s s)` in the body `x` giving: `λs.(s s)`
+
+### Introducing new syntax
+
+* As our λ expression became more elaborae they become harder to work with. To simplify working with λ expressions and to construct a higher level functional language we will allow the use of more concise notations. For example, in this and subsequent chapeters we will introduce named function definitions, infix operations, an IF style conditional expression and so on. This additional of higher level layers to a language is known as `syntactic sugaring` because the representation of the language is changed but the underlying meaning stays the same.
+
+* The new syntax for commonly used constructs will be introduced through substitution (the action of replacing someone or something with another person or thing) rules. The application of these rules won't involve making choices. Their use will lead to pure λ expressions after a finite number of steps involving simple substitutions. this is to ensure that we can always 'compile' completely a higher level representation into λ calculus before evaluation. Then we only need to refer to our original simple λ calculus rules for evaluation. 
+
+### Notation for naming functions and application reduction
+
+* It is a bit tedious writing functons out over and over again. We will now name functions using: `def <name> = <function>` to define a name/function association. For example, we could name the functions we looked at in the previous sections:
+
+```
+def identity = λx.x
+def self_apply = λs.(s s)
+def appy = λfunc.λarg.(func arg)
+```
+**Note:** Now we can just use the `<name>` in expressions to stand for the `<function>`. Strictly speaking, all defined names in an expression should be replaced by their defintions before the expression is evaluated. However, for now we will only replace a nmae by its associated function when the name is the function expression of an application. We will use the notation s. below to indicate the replacement of a `<name>` by its associated `<function>
+
+```
+(<name> <argument>) == (<function> <argument>)
+```
+
+* Formally, the replacement of a bound variable with an argument in a function body is called `β reduction (beta reduction)`. In future, instead of spelling out each `β` reduction below by blow we will introduce the notaton: `(<function> <argument>) => <expression>` to mean that the `<expression>` results from the application of the `<function>`to the `<argument>`
+
+* When we have seen a sequence of reduction before or we are familiar with the functions involved we will omit the reduction and write: `=> ... =>` to show where they should be.
+
+### Functions from functions
+
+* We can use the self application function to build version of other functions. For example, lets define a function with the same effect as the identity function `def identity2 = λx.((apply identity) x). Let us apply this to the identity function: 
+
+```
+(identity2 identity) == (λ.x.((apply identity) x) identity) =>
+((apply identity) identity) ==
+((λfunc.λarg.(func arg) identity) identity) =>
+(λarg.(identity arg) identity) =>
+(identity identity) => ... =>
+identity
+```
+
+* Let us show that `identity` and `identity2`are equivalent. Suppose: `<argument>` stands for any expression. Then: 
+
+```
+(identity2 <argument>) ==
+(λx.((apply identity) x) argument) =>
+((apply identity) <argument>) => ... =>
+(identity <argument>) => ... =>
+<argument>
+```
+* so `identity` and `identity2`have the same effect.
+
+* We can use the function application function to define a function with the same effect as the function application function itself. Suppose: `<function>` is any function. Then:
+
+```
+(apply <function>) ==
+(λf.λa.(f a) <function>) =>
+λa.(<function> a)
+```
+* Applying this to any argument: `<argument>` we get: 
+
+```
+(λa.(<function> a) <argument>) =>
+(<function> <argument>)
+```
+
+* which is the application of the original functon to the argument. Using apply adds a layer of β reduction to an application. We can also use the function application function slightly differently to define a function with the same effect as the self application function: `def self_apply2 = λs.((apply s) s)` 
+
+* Lets apply this to the identity function:
+
+```
+(self_apply2 identity) ==
+(λs.((apply s) s) identity) =>
+((apply identity) identity) =>
+(identity identity) => ... =>
+identity
+```
+
+In general, applying `self-apply2` to any argument: `<argument>` gives: 
+
+```
+(self_apply2 <argument>) ==
+(λs.((apply s) s) <argument>) =>
+((apply <argument>) <argument>) => ... =>
+(<argument> <argument>)
+```
+
+so `self_apply` and `self_apply2` have the same effect.
+
+### Argument selection and argument pairing functions
+
+* We are now going to look at functions for selecting arguments in nested function applications. We will use these functions a great deal later on to model boolean logic, integer artithmetic and list data structures. 
+
+### Selecting the first of two arguments
+
+* Consider the function `def select_first = λ.first.λsecond.first`. This function has bound variable: `first` and body: `λsecond.first` When applied to an argument, it returns a new function which when applied to another argument return the first argument. For example:
+
+```
+((select_first identity) apply) ==
+((λfirst.λsecond.first identity) apply) =>
+(λ.second.identity apply) =>
+identity
+``` 
+* In general, applying `select_first`to arbitrary arguments: `<argument1>` and `<argument2>` returns the first argument: 
+
+```
+((select_first <argument1>) <argument2>) ==
+((λfirst.λsecond.first <argument1>) <argument2>) =>
+(λsecond.<argument1> <argument2>) =>
+<argument1>
+```
+
+### Selecting the second of two arguments
+
+Consider the function `def select_second = λ.first.λsecond.second`. This function has bound variable: `first`and body `λsecond.second` which is another version of identity function. When applied to an argument `select_second` returns a new function wich when applied to another argument returns the other argument. For example:
+
+```
+((select_second identity) apply) ==
+((λfirst.λsecond.second identity) apply) =>
+(λsecond.second apply) =>
+apply
+``` 
+* The first argument `identity` was lost because the bound variable `first` does not apper in the body `λsecond.second`. In general, applying `select_second` to arbitrary arguments: `<argument1>`and: `<argument2>`returns the second argument:
+
+```
+((select_second <argument1>) <argument2>) ==
+((λfirst.λsecond.second <argument1>) <argument2>) =>
+((λsecond.second <argument2>) =>
+<argument2>
+```
+
+* We can show that `select_second` applied to anything returns a version of `identity`
